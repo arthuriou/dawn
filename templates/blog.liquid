@@ -1,0 +1,14 @@
+<div class="blog-page">
+  <h1>{{ blog.title }}</h1>
+  {% for article in blog.articles %}
+    <div class="article-preview-3d">
+      <h2>{{ article.title }}</h2>
+      <p>{{ article.excerpt_or_content | truncate: 150 }}</p>
+      <a href="{{ article.url }}" class="btn-3d">Lire la suite</a>
+    </div>
+  {% endfor %}
+  {% if blog.articles.size == 0 %}
+    <p>Aucun article dans ce blog.</p>
+  {% endif %}
+</div>
+{% section 'footer' %}

@@ -1,102 +1,50 @@
-const SCROLL_ANIMATION_TRIGGER_CLASSNAME = 'scroll-trigger';
-const SCROLL_ANIMATION_OFFSCREEN_CLASSNAME = 'scroll-trigger--offscreen';
-const SCROLL_ZOOM_IN_TRIGGER_CLASSNAME = 'animate--zoom-in';
-const SCROLL_ANIMATION_CANCEL_CLASSNAME = 'scroll-trigger--cancel';
+document.addEventListener('DOMContentLoaded', () => {
+  const layers = document.querySelectorAll('.layer');
+  const cards = document.querySelectorAll('.product-card');
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navMobile = document.querySelector('.nav-mobile');
+  const addToCartButtons = document.querySelectorAll('.btn-3d[data-action="add-to-cart"]');
+  const cartPopup = document.querySelector('.cart-popup');
+  const closePopup = document.querySelector('.close-popup');
 
-// Scroll in animation logic
-function onIntersection(elements, observer) {
-  elements.forEach((element, index) => {
-    if (element.isIntersecting) {
-      const elementTarget = element.target;
-      if (elementTarget.classList.contains(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME)) {
-        elementTarget.classList.remove(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME);
-        if (elementTarget.hasAttribute('data-cascade'))
-          elementTarget.setAttribute('style', `--animation-order: ${index};`);
-      }
-      observer.unobserve(elementTarget);
-    } else {
-      element.target.classList.add(SCROLL_ANIMATION_OFFSCREEN_CLASSNAME);
-      element.target.classList.remove(SCROLL_ANIMATION_CANCEL_CLASSNAME);
-    }
-  });
-}
-
-function initializeScrollAnimationTrigger(rootEl = document, isDesignModeEvent = false) {
-  const animationTriggerElements = Array.from(rootEl.getElementsByClassName(SCROLL_ANIMATION_TRIGGER_CLASSNAME));
-  if (animationTriggerElements.length === 0) return;
-
-  if (isDesignModeEvent) {
-    animationTriggerElements.forEach((element) => {
-      element.classList.add('scroll-trigger--design-mode');
-    });
-    return;
-  }
-
-  const observer = new IntersectionObserver(onIntersection, {
-    rootMargin: '0px 0px -50px 0px',
-  });
-  animationTriggerElements.forEach((element) => observer.observe(element));
-}
-
-// Zoom in animation logic
-function initializeScrollZoomAnimationTrigger() {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  const animationTriggerElements = Array.from(document.getElementsByClassName(SCROLL_ZOOM_IN_TRIGGER_CLASSNAME));
-
-  if (animationTriggerElements.length === 0) return;
-
-  const scaleAmount = 0.2 / 100;
-
-  animationTriggerElements.forEach((element) => {
-    let elementIsVisible = false;
-    const observer = new IntersectionObserver((elements) => {
-      elements.forEach((entry) => {
-        elementIsVisible = entry.isIntersecting;
+  if (window.innerWidth > 768) {
+    document.addEventListener('mousemove', (e) => {
+      const x = (window.innerWidth / 2 - e.pageX) / 50;
+      const y = (window.innerHeight / 2 - e.pageY) / 50;
+      layers.forEach((layer, i) => {
+        const depth = (i + 1) * 10;
+        layer.style.transform = `translateZ(-${depth * 10}px) translateX(${x / depth}px) translateY(${y / depth}px) scale(${1 + depth / 100})`;
       });
     });
-    observer.observe(element);
-
-    element.style.setProperty('--zoom-in-ratio', 1 + scaleAmount * percentageSeen(element));
-
-    window.addEventListener(
-      'scroll',
-      throttle(() => {
-        if (!elementIsVisible) return;
-
-        element.style.setProperty('--zoom-in-ratio', 1 + scaleAmount * percentageSeen(element));
-      }),
-      { passive: true }
-    );
-  });
-}
-
-function percentageSeen(element) {
-  const viewportHeight = window.innerHeight;
-  const scrollY = window.scrollY;
-  const elementPositionY = element.getBoundingClientRect().top + scrollY;
-  const elementHeight = element.offsetHeight;
-
-  if (elementPositionY > scrollY + viewportHeight) {
-    // If we haven't reached the image yet
-    return 0;
-  } else if (elementPositionY + elementHeight < scrollY) {
-    // If we've completely scrolled past the image
-    return 100;
   }
 
-  // When the image is in the viewport
-  const distance = scrollY + viewportHeight - elementPositionY;
-  let percentage = distance / ((viewportHeight + elementHeight) / 100);
-  return Math.round(percentage);
-}
+  cards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      card.querySelector('.card-inner').style.transform = `translateZ(20px) rotateX(${y * 10}deg) rotateY(${x * -10}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.querySelector('.card-inner').style.transform = 'translateZ(0) rotateX(0) rotateY(0)';
+    });
+  });
 
-window.addEventListener('DOMContentLoaded', () => {
-  initializeScrollAnimationTrigger();
-  initializeScrollZoomAnimationTrigger();
+  menuToggle.addEventListener('click', () => {
+    navMobile.classList.toggle('active');
+  });
+
+  addToCartButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const form = button.closest('form');
+      const itemName = form ? form.previousElementSibling.textContent : 'Produit';
+      document.getElementById('popup-item').textContent = `${itemName} ajouté au panier !`;
+      cartPopup.style.display = 'block';
+      if (form) form.submit();
+    });
+  });
+  closePopup.addEventListener('click', () => {
+    cartPopup.style.display = 'none';
+  });
 });
-
-if (Shopify.designMode) {
-  document.addEventListener('shopify:section:load', (event) => initializeScrollAnimationTrigger(event.target, true));
-  document.addEventListener('shopify:section:reorder', () => initializeScrollAnimationTrigger(document, true));
-}

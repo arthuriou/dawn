@@ -1,0 +1,18 @@
+<div class="product-card" data-product-id="{{ product.id }}">
+  <div class="card-inner">
+    <img src="{{ product.featured_image | img_url: '300x300' }}" alt="{{ product.title }}" class="card-image">
+    <h3>{{ product.title }}</h3>
+    <p>{{ product.price | money }}</p>
+    <form method="post" action="/cart/add">
+      <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+      <button type="submit" class="btn-3d" data-action="add-to-cart">Ajouter au panier</button>
+    </form>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Carte Produit 3D",
+  "tag": "section",
+  "settings": []
+}
+{% endschema %}

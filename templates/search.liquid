@@ -1,0 +1,16 @@
+<div class="search-page">
+  <h1>Résultats de recherche pour "{{ search.terms | escape }}"</h1>
+  <div class="products-grid">
+    {% for item in search.results %}
+      {% if item.object_type == 'product' %}
+        {% include 'product-card' with item %}
+      {% else %}
+        <p>{{ item.title }} ({{ item.object_type }})</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% if search.results.size == 0 %}
+    <p>Aucun résultat trouvé.</p>
+  {% endif %}
+</div>
+{% section 'footer' %}

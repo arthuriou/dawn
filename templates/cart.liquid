@@ -1,0 +1,19 @@
+<div class="cart-page">
+  <h1>Votre panier</h1>
+  {% if cart.item_count > 0 %}
+    <form action="/cart" method="post">
+      {% for item in cart.items %}
+        <div class="cart-item-3d">
+          <img src="{{ item.image | img_url: '100x100' }}" alt="{{ item.title }}">
+          <p>{{ item.title }} - {{ item.quantity }} x {{ item.price | money }}</p>
+          <a href="/cart/change?line={{ forloop.index }}&quantity=0" class="btn-3d">Supprimer</a>
+        </div>
+      {% endfor %}
+      <p>Total : {{ cart.total_price | money }}</p>
+      <button type="submit" name="checkout" class="btn-3d">Payer</button>
+    </form>
+  {% else %}
+    <p>Votre panier est vide.</p>
+  {% endif %}
+</div>
+{% section 'footer' %}

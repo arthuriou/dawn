@@ -1,0 +1,11 @@
+<div class="products-grid">
+  {% for product in collections.frontpage.products limit: 4 %}
+    {% include 'product-card' %}
+  {% endfor %}
+</div>
+{% schema %}
+{
+  "name": "Produits en vedette",
+  "settings": []
+}
+{% endschema %}

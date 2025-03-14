@@ -1,0 +1,14 @@
+<div class="product-page">
+  <div class="product-image-3d">
+    <img src="{{ product.featured_image | img_url: '500x500' }}" alt="{{ product.title }}" class="image-3d">
+  </div>
+  <div class="product-details">
+    <h1>{{ product.title }}</h1>
+    <p>{{ product.price | money }}</p>
+    <form method="post" action="/cart/add">
+      <input type="hidden" name="id" value="{{ product.variants.first.id }}">
+      <button type="submit" class="btn-3d" data-action="add-to-cart">Ajouter au panier</button>
+    </form>
+  </div>
+</div>
+{% section 'footer' %}

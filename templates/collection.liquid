@@ -1,0 +1,12 @@
+<div class="collection-page">
+  <h1>{{ collection.title }}</h1>
+  <div class="products-grid">
+    {% for product in collection.products %}
+      {% include 'product-card' %}
+    {% endfor %}
+  </div>
+  {% if collection.products.size == 0 %}
+    <p>Aucun produit dans cette collection.</p>
+  {% endif %}
+</div>
+{% section 'footer' %}

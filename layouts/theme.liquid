@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="{{ shop.locale }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page_title }}</title>
+  {{ content_for_header }}
+  {{ 'styles.css' | asset_url | stylesheet_tag }}
+  {{ 'animations.js' | asset_url | script_tag }}
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="{% if settings.high_contrast %}high-contrast{% endif %}">
+  <div class="background-3d">
+    <div class="layer layer-1"></div>
+    <div class="layer layer-2"></div>
+  </div>
+  <header class="header-3d">
+    <a href="/" class="logo">{{ shop.name }}</a>
+    <nav class="nav-desktop">
+      {% for link in linklists.main-menu.links %}
+        <a href="{{ link.url }}" class="nav-link">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+    <div class="menu-toggle">☰</div>
+    <nav class="nav-mobile">
+      {% for link in linklists.main-menu.links %}
+        <a href="{{ link.url }}" class="nav-link">{{ link.title }}</a>
+      {% endfor %}
+    </nav>
+  </header>
+  <main class="content">
+    {{ content_for_layout }}
+  </main>
+  <div class="cart-popup" style="display: none;">
+    <h3>Article ajouté !</h3>
+    <p id="popup-item"></p>
+    <button class="btn-3d close-popup">Continuer</button>
+    <a href="/cart" class="btn-3d">Voir le panier</a>
+  </div>
+</body>
+</html>
